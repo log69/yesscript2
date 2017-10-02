@@ -1,0 +1,29 @@
+{
+	"manifest_version": 2,
+	"name": "YesScript2",
+	"version": "1.0",
+
+	"description": "Block scripts on specific sites",
+	"icons": {
+		"48": "icons/icon.svg"
+	},
+
+	"applications": {
+	  "gecko": {
+		"id": "87b5a7b1-496e-4377-b87d-e2fcda9d457f",
+		"strict_min_version": "55.0"
+	  }
+	},
+
+	"permissions": [
+		"webRequest",
+		"webRequestBlocking",
+		"<all_urls>"
+	],
+
+	"background": {
+		"scripts": [
+			"background.js"
+		]
+	}
+}
