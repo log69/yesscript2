@@ -4,18 +4,26 @@
 	"version": "1.0",
 
 	"description": "Block scripts on specific sites",
+	"homepage_url": "https://github.com/log69/yesscript2",
 	"icons": {
-		"48": "icons/icon.svg"
+		"128": "icons/icon_off.svg",
+		"128": "icons/icon_on.svg"
 	},
 
 	"applications": {
 	  "gecko": {
-		"id": "87b5a7b1-496e-4377-b87d-e2fcda9d457f",
+		"id": "yesscript2@example.org",
 		"strict_min_version": "55.0"
 	  }
 	},
 
+	"browser_action": {
+		"default_icon": "icons/icon_off.svg"
+	},
+
 	"permissions": [
+		"activeTab",
+		"storage",
 		"webRequest",
 		"webRequestBlocking",
 		"<all_urls>"
