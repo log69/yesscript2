@@ -1,14 +1,13 @@
 {
 	"manifest_version": 2,
 	"name": "YesScript2",
-	"version": "0.8",
+	"version": "0.7",
 
 	"description": "blocks scripts on specific sites",
 	"homepage_url": "https://github.com/log69/yesscript2",
 	"icons": {
-		 "48": "icons/icon.svg",
-		 "96": "icons/icon.svg"
-		"128": "icons/icon.svg"
+		"48": "icons/icon.svg",
+		"96": "icons/icon.svg"
 	},
 
 	"applications": {

@@ -29,10 +29,10 @@ function state(url, flag){
 
 		// set toolbar icon
 		if (flag_icon){
-			chrome.chrome.ction.setIcon({path: "icons/icon2.svg"});
+			browser.browserAction.setIcon({path: "icons/icon2.svg"});
 		}
 		else{
-			chrome.chrome.ction.setIcon({path: "icons/icon.svg"});
+			browser.browserAction.setIcon({path: "icons/icon.svg"});
 		}
 	}
 
@@ -41,18 +41,18 @@ function state(url, flag){
 
 
 // mark page untrusted or trusted when icon is clicked
-chrome.chrome.ction.onClicked.addListener(
+browser.browserAction.onClicked.addListener(
 	function(details){
 		state(details.url, 1);
-		chrome.tabs.reload();
+		browser.tabs.reload();
 	}
 );
 
 
 // update icon when switching tab based on whether page is trusted
-chrome.tabs.onActivated.addListener(
+browser.tabs.onActivated.addListener(
 	function(details){
-		chrome.tabs.query({currentWindow: true, active: true},
+		browser.tabs.query({currentWindow: true, active: true},
 			function(tab){
 				state(tab[0].url);
 			}
@@ -62,7 +62,7 @@ chrome.tabs.onActivated.addListener(
 
 
 // block scripts on page if url is marked untrsuted based on whether url exists in storage
-chrome.webRequest.onHeadersReceived.addListener(
+browser.webRequest.onHeadersReceived.addListener(
 	function(details){
 
 		if (state(details.url)){
