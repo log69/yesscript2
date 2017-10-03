@@ -6,8 +6,8 @@
 	"description": "Block scripts on specific sites",
 	"homepage_url": "https://github.com/log69/yesscript2",
 	"icons": {
-		"128": "icons/icon_off.svg",
-		"128": "icons/icon_on.svg"
+		"48": "icons/icon.svg",
+		"96": "icons/icon.svg"
 	},
 
 	"applications": {
@@ -18,7 +18,7 @@
 	},
 
 	"browser_action": {
-		"default_icon": "icons/icon_off.svg"
+		"default_icon": "icons/icon2.svg"
 	},
 
 	"permissions": [
