@@ -7,7 +7,7 @@
 	"homepage_url": "https://github.com/log69/yesscript2",
 	"icons": {
 		 "48": "icons/icon.svg",
-		 "96": "icons/icon.svg",
+		 "96": "icons/icon.svg"
 		"128": "icons/icon.svg"
 	},
 
