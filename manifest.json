@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "YesScript2",
-	"version": "0.2",
+	"version": "0.3",
 
 	"description": "blocks scripts on specific sites",
 	"homepage_url": "https://github.com/log69/yesscript2",
@@ -12,13 +12,13 @@
 
 	"applications": {
 	  "gecko": {
-		"id": "yesscript202@example.org",
+		"id": "yesscript203@example.org",
 		"strict_min_version": "55.0"
 	  }
 	},
 
 	"browser_action": {
-		"default_icon": "icons/icon2.svg"
+		"default_icon": "icons/icon.svg"
 	},
 
 	"permissions": [
