@@ -12,7 +12,7 @@
 
 	"applications": {
 	  "gecko": {
-		"id": "yesscript203@example.org",
+		"id": "yesscript202@example.org",
 		"strict_min_version": "55.0"
 	  }
 	},
