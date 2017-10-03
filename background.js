@@ -1,7 +1,5 @@
-// block scripts on specific sites
 browser.webRequest.onHeadersReceived.addListener(
 	function(details){
-		//console.log("YesScript2 / details: " + JSON.stringify(details));
 
 		// get domain part of the url
 		var u = details.url.match(/:\/\/(.[^/]+)/)[1];
@@ -9,6 +7,7 @@ browser.webRequest.onHeadersReceived.addListener(
 		if (localStorage.getItem(u)){
 
 			// include the original response header too merging the two arrays here
+			// the trick of blocking all scripts for a domain is adding CSP to the page header
 			// https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
 			var rh = details.responseHeaders.concat([{name: "Content-Security-Policy", value: "script-src 'none'"}]);
 			return {responseHeaders: rh};
@@ -20,9 +19,9 @@ browser.webRequest.onHeadersReceived.addListener(
 	["blocking", "responseHeaders"]
 );
 
+
 browser.browserAction.onClicked.addListener(
 	function(details){
-		//console.log("YesScript2 / details: " + JSON.stringify(details));
 
 		// get domain part of the url
 		var u = details.url.match(/:\/\/(.[^/]+)/)[1];
