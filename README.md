@@ -1,5 +1,5 @@
-# yesscript2
-## YesScript2, Firefox Webextension, blocks scripts on specified sites
+# YesScript2
+## Firefox Webextension, blocks scripts on specified sites
 
 Clicking the toolbar icon does the following:
 
