@@ -3,7 +3,7 @@
 	"name": "YesScript2",
 	"version": "1.0",
 
-	"description": "Block scripts on specific sites",
+	"description": "blocks scripts on specific sites",
 	"homepage_url": "https://github.com/log69/yesscript2",
 	"icons": {
 		"48": "icons/icon.svg",
