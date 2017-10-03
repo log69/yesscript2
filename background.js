@@ -31,7 +31,7 @@ browser.browserAction.onClicked.addListener(
 				// store it if not
 				localStorage.setItem(u, 1);
 				// set toolbar icon
-				browser.browserAction.setIcon({path: "icons/icon_on.svg"});
+				browser.browserAction.setIcon({path: "icons/icon2.svg"});
 				// reload the page
 				browser.tabs.reload();
 			}
@@ -39,7 +39,7 @@ browser.browserAction.onClicked.addListener(
 				// store it if not
 				localStorage.removeItem(u);
 				// set toolbar icon
-				browser.browserAction.setIcon({path: "icons/icon_off.svg"});
+				browser.browserAction.setIcon({path: "icons/icon.svg"});
 				// reload the page
 				browser.tabs.reload();
 			}
