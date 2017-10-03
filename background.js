@@ -1,5 +1,9 @@
 // check if page is marked untrusted and set icons and return state according to it
-function state(url, flag_set){
+// flag values:
+// 0 - return state
+// 1 - set icon and return state
+// 2 - set icon and set state and return state
+function state(url, flag){
 	var flag_untrusted = false;
 	var flag_icon = false;
 
@@ -9,31 +13,38 @@ function state(url, flag_set){
 		if (u2){
 			var u = u2[1];
 
-			// url exists? set icon state according to it
+			// url exists? if so, it means page is marked untrusted
 			flag_untrusted = localStorage.getItem(u);
 			if (!flag_untrusted){
-				if (flag_set){
+				if (flag >= 2){
 					// mark page untrusted if icon was clicked
 					localStorage.setItem(u, 1);
+					flag_icon = true;
 				}
-				flag_icon = flag_set;
+				else{
+					flag_icon = false;
+				}
 			}
 			else{
-				if (flag_set){
+				if (flag >= 2){
 					// mark page trusted if icon was clicked
 					localStorage.removeItem(u);
+					flag_icon = false;
 				}
-				flag_icon = !flag_set;
+				else{
+					flag_icon = true;
+				}
 			}
 		}
 
-		if (flag_icon){
-			// set toolbar icon
-			browser.browserAction.setIcon({path: "icons/icon2.svg"});
-		}
-		else{
-			// set toolbar icon
-			browser.browserAction.setIcon({path: "icons/icon.svg"});
+		// set toolbar icon
+		if (flag >= 1){
+			if (flag_icon){
+				browser.browserAction.setIcon({path: "icons/icon2.svg"});
+			}
+			else{
+				browser.browserAction.setIcon({path: "icons/icon.svg"});
+			}
 		}
 	}
 
@@ -44,7 +55,7 @@ function state(url, flag_set){
 // mark page untrusted or trusted when icon is clicked
 browser.browserAction.onClicked.addListener(
 	function(details){
-		state(details.url, 1);
+		state(details.url, 2);
 		browser.tabs.reload();
 	}
 );
@@ -55,7 +66,7 @@ browser.tabs.onActivated.addListener(
 	function(details){
 		browser.tabs.query({currentWindow: true, active: true},
 			function(tab){
-				state(tab[0].url);
+				state(tab[0].url, 1);
 			}
 		);
 	}
@@ -66,7 +77,7 @@ browser.tabs.onActivated.addListener(
 browser.webRequest.onHeadersReceived.addListener(
 	function(details){
 
-		if (state(details.url)){
+		if (state(details.url, 0)){
 
 			// include the original response header too merging the two arrays here
 			// the trick of blocking all scripts for a domain is adding CSP to the page header
@@ -77,6 +88,6 @@ browser.webRequest.onHeadersReceived.addListener(
 
 		return {};
 	},
-	{urls: ["<all_urls>"]},
+	{urls: ["<all_urls>"], types: ["main_frame"]},
 	["blocking", "responseHeaders"]
 );
