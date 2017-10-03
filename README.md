@@ -8,3 +8,5 @@ It marks the domain of the active tab untrusted in the local storage and reloads
 *This is a work in progress. This extension can be tested from Firefox by opening the page about:debugging and loading the manifest file in it.*
 
 *It is the remake of the YesScript addon that will be incompatible with Firefox version 57+.*
+
+I take no responsibility whatsoever in regards of this software, use it at your own risk.
