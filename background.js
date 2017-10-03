@@ -1,10 +1,72 @@
+// check if page is marked untrusted and set icons and return state according to it
+function state(url, flag_set){
+	var flag_untrusted = false;
+	var flag_icon = false;
+
+	if (url){
+		// get domain part of the url
+		var u2 = url.match(/:\/\/(.[^/]+)/);
+		if (u2){
+			var u = u2[1];
+
+			// url exists? set icon state according to it
+			flag_untrusted = localStorage.getItem(u);
+			if (!flag_untrusted){
+				if (flag_set){
+					// mark page untrusted if icon was clicked
+					localStorage.setItem(u, 1);
+				}
+				flag_icon = flag_set;
+			}
+			else{
+				if (flag_set){
+					// mark page trusted if icon was clicked
+					localStorage.removeItem(u);
+				}
+				flag_icon = !flag_set;
+			}
+		}
+
+		if (flag_icon){
+			// set toolbar icon
+			browser.browserAction.setIcon({path: "icons/icon2.svg"});
+		}
+		else{
+			// set toolbar icon
+			browser.browserAction.setIcon({path: "icons/icon.svg"});
+		}
+	}
+
+	return flag_untrusted;
+}
+
+
+// mark page untrusted or trusted when icon is clicked
+browser.browserAction.onClicked.addListener(
+	function(details){
+		state(details.url, 1);
+		browser.tabs.reload();
+	}
+);
+
+
+// update icon when switching tab based on whether page is trusted
+browser.tabs.onActivated.addListener(
+	function(details){
+		browser.tabs.query({currentWindow: true, active: true},
+			function(tab){
+				state(tab[0].url);
+			}
+		);
+	}
+);
+
+
+// block scripts on page if url is marked untrsuted based on whether url exists in storage
 browser.webRequest.onHeadersReceived.addListener(
 	function(details){
 
-		// get domain part of the url
-		var u = details.url.match(/:\/\/(.[^/]+)/)[1];
-		// block scripts on page if url is marked bad (url exists in storage)
-		if (localStorage.getItem(u)){
+		if (state(details.url)){
 
 			// include the original response header too merging the two arrays here
 			// the trick of blocking all scripts for a domain is adding CSP to the page header
@@ -17,32 +79,4 @@ browser.webRequest.onHeadersReceived.addListener(
 	},
 	{urls: ["<all_urls>"]},
 	["blocking", "responseHeaders"]
-);
-
-
-browser.browserAction.onClicked.addListener(
-	function(details){
-
-		// get domain part of the url
-		var u = details.url.match(/:\/\/(.[^/]+)/)[1];
-		if (u){
-			// url exists?
-			if (!localStorage.getItem(u)){
-				// store it if not
-				localStorage.setItem(u, 1);
-				// set toolbar icon
-				browser.browserAction.setIcon({path: "icons/icon2.svg"});
-				// reload the page
-				browser.tabs.reload();
-			}
-			else{
-				// store it if not
-				localStorage.removeItem(u);
-				// set toolbar icon
-				browser.browserAction.setIcon({path: "icons/icon.svg"});
-				// reload the page
-				browser.tabs.reload();
-			}
-		}
-	}
 );
