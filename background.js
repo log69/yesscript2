@@ -1,8 +1,4 @@
 // check if page is marked untrusted and set icons and return state according to it
-// flag values:
-// 0 - return state
-// 1 - set icon and return state
-// 2 - set icon and set state and return state
 function state(url, flag){
 	var flag_untrusted = false;
 	var flag_icon = false;
@@ -16,35 +12,27 @@ function state(url, flag){
 			// url exists? if so, it means page is marked untrusted
 			flag_untrusted = localStorage.getItem(u);
 			if (!flag_untrusted){
-				if (flag >= 2){
+				if (flag){
 					// mark page untrusted if icon was clicked
 					localStorage.setItem(u, 1);
-					flag_icon = true;
 				}
-				else{
-					flag_icon = false;
-				}
+				flag_icon = flag;
 			}
 			else{
-				if (flag >= 2){
+				if (flag){
 					// mark page trusted if icon was clicked
 					localStorage.removeItem(u);
-					flag_icon = false;
 				}
-				else{
-					flag_icon = true;
-				}
+				flag_icon = !flag;
 			}
 		}
 
 		// set toolbar icon
-		if (flag >= 1){
-			if (flag_icon){
-				browser.browserAction.setIcon({path: "icons/icon2.svg"});
-			}
-			else{
-				browser.browserAction.setIcon({path: "icons/icon.svg"});
-			}
+		if (flag_icon){
+			browser.browserAction.setIcon({path: "icons/icon2.svg"});
+		}
+		else{
+			browser.browserAction.setIcon({path: "icons/icon.svg"});
 		}
 	}
 
@@ -55,7 +43,7 @@ function state(url, flag){
 // mark page untrusted or trusted when icon is clicked
 browser.browserAction.onClicked.addListener(
 	function(details){
-		state(details.url, 2);
+		state(details.url, 1);
 		browser.tabs.reload();
 	}
 );
@@ -66,7 +54,7 @@ browser.tabs.onActivated.addListener(
 	function(details){
 		browser.tabs.query({currentWindow: true, active: true},
 			function(tab){
-				state(tab[0].url, 1);
+				state(tab[0].url);
 			}
 		);
 	}
@@ -77,7 +65,7 @@ browser.tabs.onActivated.addListener(
 browser.webRequest.onHeadersReceived.addListener(
 	function(details){
 
-		if (state(details.url, 0)){
+		if (state(details.url)){
 
 			// include the original response header too merging the two arrays here
 			// the trick of blocking all scripts for a domain is adding CSP to the page header
