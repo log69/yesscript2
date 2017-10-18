@@ -1,38 +1,38 @@
 {
-	"manifest_version": 2,
-	"name": "YesScript2",
-	"version": "0.8",
+  "manifest_version": 2,
+  "name": "YesScript2",
+  "version": "0.8",
 
-	"description": "blocks scripts on specific sites",
-	"homepage_url": "https://github.com/log69/yesscript2",
-	"icons": {
-		 "48": "icons/icon.svg",
-		 "96": "icons/icon.svg",
-		"128": "icons/icon.svg"
-	},
+  "description": "blocks scripts on specific sites",
+  "homepage_url": "https://github.com/log69/yesscript2",
+  "icons": {
+     "48": "icons/icon.svg",
+     "96": "icons/icon.svg",
+    "128": "icons/icon.svg"
+  },
 
-	"applications": {
-	  "gecko": {
-		"id": "yesscript202@example.org",
-		"strict_min_version": "52.0"
-	  }
-	},
+  "applications": {
+    "gecko": {
+    "id": "yesscript202@example.org",
+    "strict_min_version": "52.0"
+    }
+  },
 
-	"browser_action": {
-		"default_icon": "icons/icon.svg"
-	},
+  "browser_action": {
+    "default_icon": "icons/icon.svg"
+  },
 
-	"permissions": [
-		"storage",
-		"tabs",
-		"webRequest",
-		"webRequestBlocking",
-		"<all_urls>"
-	],
+  "permissions": [
+    "storage",
+    "tabs",
+    "webRequest",
+    "webRequestBlocking",
+    "<all_urls>"
+  ],
 
-	"background": {
-		"scripts": [
-			"background.js"
-		]
-	}
+  "background": {
+    "scripts": [
+      "background.js"
+    ]
+  }
 }
