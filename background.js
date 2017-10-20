@@ -8,14 +8,13 @@
 // and I read only the local one which is always synced this way
 
 function url_sync(){
-  var flag = localStorage.getItem("sync");
-  if (!flag){
+  if (!localStorage.getItem("sync") && !localStorage.getItem("urls")){
     chrome.storage.sync.get("urls", function(data){
       var d = [];
       if (data){
         if (data.urls){
           d = data.urls;
-          if (!localStorage.getItem("urls")){
+          if (d.length > 0){
             localStorage.setItem("urls", JSON.stringify(d));
             localStorage.setItem("sync", 1);
           }
