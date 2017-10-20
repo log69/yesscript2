@@ -11,19 +11,23 @@ function url_sync(){
   var flag = localStorage.getItem("sync");
   if (!flag){
     chrome.storage.sync.get("urls", function(data){
+      var d = [];
       if (data){
-        var d = data.url ? data.url : [];
-        localStorage.setItem("urls", JSON.stringify(d));
-        localStorage.setItem("sync", 1);
+        if (data.urls){
+          d = data.urls;
+          if (!localStorage.getItem("urls")){
+            localStorage.setItem("urls", JSON.stringify(d));
+            localStorage.setItem("sync", 1);
+          }
+        }
       }
     });
   }
-  return flag;
 }
 
 function url_get(){
-  var d = JSON.parse(localStorage.getItem("urls"));
-  return (d ? d : []);
+  var d = localStorage.getItem("urls");
+  return (d ? JSON.parse(d) : []);
 }
 
 function url_test(url){
@@ -111,6 +115,7 @@ chrome.browserAction.onClicked.addListener(
 // update icon when switching tab based on whether page is trusted
 chrome.tabs.onActivated.addListener(
   function(details){
+    url_sync();
     chrome.tabs.query({currentWindow: true, active: true},
       function(tab){
         state(tab[0].url);
