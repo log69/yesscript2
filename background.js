@@ -1,3 +1,54 @@
+// data functions
+
+// sync remote data to local if not yet done
+// this is necessary because both the events in the background js
+// and the sync storage API are async calls too
+// and I wouldn't be able to pass data over from one to the other
+// so during the calls I set both the local and the remote storage
+// and I read only the local one which is always synced this way
+
+function url_sync(){
+  var flag = localStorage.getItem("sync");
+  if (!flag){
+    chrome.storage.local.get("urls", function(data){
+
+      var d = data.url ? data.url : [];
+      localStorage.setItem("urls", JSON.stringify(d));
+      localStorage.setItem("sync", 1);
+    });
+  }
+  return flag;
+}
+
+function url_get(){
+  var d = JSON.parse(localStorage.getItem("urls"));
+  return (d ? d : []);
+}
+
+function url_test(url){
+  var d = url_get();
+  return (d.indexOf(url) > -1);
+}
+
+function url_set(url){
+  if (!url_test(url)){
+    var d = url_get();
+    d.push(url);
+    localStorage.setItem("urls", JSON.stringify(d));
+    chrome.storage.local.set({"urls": d});
+  }
+}
+
+function url_remove(url){
+  if (url_test(url)){
+    var d = url_get();
+    d.splice(d.indexOf(url), 1);
+    localStorage.setItem("urls", JSON.stringify(d));
+    chrome.storage.local.set({"urls": d});
+  }
+}
+
+
 // check if page is marked untrusted and set icons and return state
 // according to it
 function state(url, flag){
@@ -11,18 +62,18 @@ function state(url, flag){
       var u = u2[1];
 
       // url exists? if so, it means page is marked untrusted
-      flag_untrusted = localStorage.getItem(u);
+      flag_untrusted = url_test(u);
       if (!flag_untrusted){
         if (flag){
           // mark page untrusted if icon was clicked
-          localStorage.setItem(u, 1);
+          url_set(u);
         }
         flag_icon = flag;
       }
       else{
         if (flag){
           // mark page trusted if icon was clicked
-          localStorage.removeItem(u);
+          url_remove(u);
         }
         flag_icon = !flag;
       }
@@ -39,6 +90,12 @@ function state(url, flag){
 
   return flag_untrusted;
 }
+
+
+// sync data
+document.addEventListener("DOMContentLoaded", function(){
+  url_sync();
+}, false);
 
 
 // mark page untrusted or trusted when icon is clicked
