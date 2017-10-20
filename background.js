@@ -11,10 +11,11 @@ function url_sync(){
   var flag = localStorage.getItem("sync");
   if (!flag){
     chrome.storage.sync.get("urls", function(data){
-
-      var d = data.url ? data.url : [];
-      localStorage.setItem("urls", JSON.stringify(d));
-      localStorage.setItem("sync", 1);
+      if (data){
+        var d = data.url ? data.url : [];
+        localStorage.setItem("urls", JSON.stringify(d));
+        localStorage.setItem("sync", 1);
+      }
     });
   }
   return flag;
@@ -64,7 +65,6 @@ function state(url, flag){
       // url exists? if so, it means page is marked untrusted
       flag_untrusted = url_test(u);
       if (!flag_untrusted){
-console.log("YesScript2 debug **************************** page is trusted");
         if (flag){
           // mark page untrusted if icon was clicked
           url_set(u);
@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", function(){
 chrome.browserAction.onClicked.addListener(
   function(details){
     state(details.url, 1);
-    chrome.tabs.reload();
+    chrome.tabs.reload({bypassCache: true});
   }
 );
 
@@ -132,12 +132,8 @@ chrome.webRequest.onHeadersReceived.addListener(
       // the trick of blocking all scripts for a domain is
       //   adding CSP to the page header
       // https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
-      // also have to disable caching
-      //   otherwise the HTTP header gets cached too
-      //   and turning off blocking will still block the page
-      // https://developer.mozilla.org/en-US/docs/Web/HTTP/Caching
       var rh = details.responseHeaders.concat(
-        [{name: "Content-Security-Policy", value: "script-src 'none'"}, {name: "Cache-Control", value: "no-store"}]
+        [{name: "Content-Security-Policy", value: "script-src 'none'"}]
       );
       return {responseHeaders: rh};
     }
