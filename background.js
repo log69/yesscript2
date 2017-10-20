@@ -10,7 +10,7 @@
 function url_sync(){
   var flag = localStorage.getItem("sync");
   if (!flag){
-    chrome.storage.local.get("urls", function(data){
+    chrome.storage.sync.get("urls", function(data){
 
       var d = data.url ? data.url : [];
       localStorage.setItem("urls", JSON.stringify(d));
@@ -35,7 +35,7 @@ function url_set(url){
     var d = url_get();
     d.push(url);
     localStorage.setItem("urls", JSON.stringify(d));
-    chrome.storage.local.set({"urls": d});
+    chrome.storage.sync.set({"urls": d});
   }
 }
 
@@ -44,7 +44,7 @@ function url_remove(url){
     var d = url_get();
     d.splice(d.indexOf(url), 1);
     localStorage.setItem("urls", JSON.stringify(d));
-    chrome.storage.local.set({"urls": d});
+    chrome.storage.sync.set({"urls": d});
   }
 }
 
