@@ -96,12 +96,6 @@ function state(url, flag){
 }
 
 
-// sync data
-document.addEventListener("DOMContentLoaded", function(){
-  url_sync();
-}, false);
-
-
 // mark page untrusted or trusted when icon is clicked
 chrome.browserAction.onClicked.addListener(
   function(details){
@@ -114,6 +108,9 @@ chrome.browserAction.onClicked.addListener(
 // update icon when switching tab based on whether page is trusted
 chrome.tabs.onActivated.addListener(
   function(details){
+    // try to sync data from time to time on tab switch because
+    //   the user might sign in the Sync service only later
+    //   and I need to grab the remote data then
     url_sync();
     chrome.tabs.query({currentWindow: true, active: true},
       function(tab){
@@ -147,3 +144,7 @@ chrome.webRequest.onHeadersReceived.addListener(
   {urls: ["<all_urls>"], types: ["main_frame"]},
   ["blocking", "responseHeaders"]
 );
+
+
+// sync data on extension startup
+url_sync();
