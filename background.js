@@ -27,24 +27,24 @@ function JSBlocker(){
 	
 	//Gets current url from focused tab
 	browser.tabs.query({currentWindow: true, active: true},function(tabs){
-		self.setcurrent(tabs[0].url);
+		if(tabs.length) self.setcurrent(tabs[0].url);
 	});
 	
 	//Private methods
 	var syncstorage = function(){
 		browser.storage.sync.get(function(storage){
+			var syncing = browser.tabs.onActivated.hasListener(syncstorage);
 			if(storage && storage.urls){
 				self.urls = storage.urls;
 				browser.storage.local.set({urls: self.urls});
-				if(browser.tabs.onActivated.hasListener(syncstorage))
-					browser.tabs.onActivated.removeListener(syncstorage);}
-			else browser.tabs.onActivated.addListener(syncstorage);
+				if(syncing) browser.tabs.onActivated.removeListener(syncstorage);}
+			else if(!syncing) browser.tabs.onActivated.addListener(syncstorage);
 		});
 	};
 	
 	//Public methods
 	this.setcurrent = function(url){
-		var domain = (url && url.match(/:\/\/(.[^/]+)/) || [])[1] || url || null;
+		var domain = (url.match(/:\/\/(.[^/]+)/) || [])[1] || url;
 		this.current = domain;
 		this.trust = (domain && !this.urls.contains(domain));
 		this.updateicon();
@@ -61,8 +61,9 @@ function JSBlocker(){
 	};
 	
 	this.updateicon = function(){
-		if(this.trust) browser.browserAction.setIcon({path: "icons/icon.svg"});
-		else browser.browserAction.setIcon({path: "icons/icon2.svg"});
+		if(!android){
+			if(this.trust) browser.browserAction.setIcon({path: "icons/icon.svg"});
+			else browser.browserAction.setIcon({path: "icons/icon2.svg"});}
 	};
 }
 
@@ -78,10 +79,9 @@ var jsblocker = new JSBlocker();
 //Updates icon on tab/window focus changed based on whether page is trusted
 if(!android)
 	browser.windows.onFocusChanged.addListener(function(winid){
-		if(winid!=browser.windows.WINDOW_ID_NONE)
-			browser.tabs.query({windowId: winid, active: true},function(tabs){
-				jsblocker.setcurrent(tabs[0].url);
-			});
+		browser.tabs.query({windowId: winid, active: true},function(tabs){
+			if(tabs.length) jsblocker.setcurrent(tabs[0].url);
+		});
 	});
 
 browser.tabs.onActivated.addListener(function(info){
