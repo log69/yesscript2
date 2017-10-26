@@ -1,4 +1,4 @@
-It marks the domain of the active tab untrusted, reloads the page and blocks scripts from running on it. An option for the user to stop a website eating up resources or doing malicious things even if it breaks functionality of the page.
+**It marks the domain of the active tab untrusted, reloads the page and blocks scripts from running on it. An option for the user to stop a website eating up resources or doing malicious things even if it breaks functionality of the page.**
 
 
 The primary goal of this extension is to give you the control to be able to block or allow scrips on specific websites. You cannot do this with your stock browser without turning off scripting for every page which is not useful.
@@ -11,6 +11,6 @@ This tool is just an option for you. There are other more sophisticated options 
 
 One of main priority when writing this extension was to create an extremely small code set so it can be audited much easier making it more trustful. The less lines of code, the more reliable and secure a solution can be. Currently the main code without comments and empty lines consists of around 100 lines only.
 
-I'd also like to express that I find the original YesScript extension a great idea and a nice work. This is a complete rewrite of it because the developer did not intend to continue development. This has nothing to do with the original in any way except its purpose.
+*I'd also like to express that I find the original YesScript extension a great idea and a nice work. This is a complete rewrite of it because the developer did not intend to continue development. This has nothing to do with the original in any way except its purpose.*
 
 Thank you.
