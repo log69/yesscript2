@@ -132,7 +132,7 @@ chrome.browserAction.onClicked.addListener(
 );
 
 
-// update icon state when switching tab based on whether page is trusted
+// update icon state when switching tab
 chrome.tabs.onActivated.addListener(
   function(details){
     // try to sync remote data from time to time on tab switch
@@ -145,6 +145,16 @@ chrome.tabs.onActivated.addListener(
         state(tab[0].url);
       }
     );
+  }
+);
+
+
+// update icon state when the active page has finished loading
+chrome.tabs.onUpdated.addListener(
+  function(tabId, changeInfo, tab){
+    if (tab.status == "complete" && tab.active) {
+      state(tab.url);
+    }
   }
 );
 
