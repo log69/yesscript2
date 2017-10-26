@@ -40,13 +40,13 @@ function url_sync(){
 }
 
 function url_sync_remote(){
-  if (chrome.storage.sync){
+  if (!g_sync_remote && chrome.storage.sync){
     chrome.storage.sync.get(function(sdata){
       if (sdata){
         g_urls = array_merge_uniq(sdata.urls || [], g_urls);
+        g_sync_remote = true;
+        url_store();
       }
-      g_sync_remote = true;
-      url_store();
     });
   }
 }
