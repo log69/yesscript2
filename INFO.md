@@ -13,4 +13,4 @@ This tool is just an option for you. There are other more sophisticated options 
 
 *I'd also like to express that I find the original YesScript extension a great idea and a nice work. This is a complete rewrite of it because the developer did not intend to continue development. This has nothing to do with the original in any way except its purpose.*
 
-Thank you.
+*Thank you.*
