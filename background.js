@@ -44,9 +44,9 @@ function url_sync_remote(){
     chrome.storage.sync.get(function(sdata){
       if (sdata){
         g_urls = array_merge_uniq(sdata.urls || [], g_urls);
-        g_sync_remote = true;
-        url_store();
       }
+      g_sync_remote = true;
+      url_store();
     });
   }
 }
