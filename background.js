@@ -18,6 +18,7 @@ function JSBlocker(){
 	this.current = null;
 	this.trust = false;
 	var self = this;
+	var syncing = false;
 	
 	//Retrieves data from local storage and from sync storage if available
 	browser.storage.local.get(function(storage){
@@ -33,12 +34,14 @@ function JSBlocker(){
 	//Private methods
 	var syncstorage = function(){
 		browser.storage.sync.get(function(storage){
-			var syncing = browser.tabs.onActivated.hasListener(syncstorage);
 			if(storage && storage.urls){
 				self.urls = storage.urls;
 				browser.storage.local.set({urls: self.urls});
-				if(syncing) browser.tabs.onActivated.removeListener(syncstorage);}
+				if(syncing){
+					browser.tabs.onActivated.removeListener(syncstorage);
+					browser.storage.sync.set({urls: self.urls});}}
 			else if(!syncing) browser.tabs.onActivated.addListener(syncstorage);
+			syncing = browser.tabs.onActivated.hasListener(syncstorage);
 		});
 	};
 	
@@ -56,7 +59,7 @@ function JSBlocker(){
 		this.trust = !this.trust;
 		this.updateicon();
 		browser.storage.local.set({urls: this.urls});
-		if(browser.storage.sync) browser.storage.sync.set({urls: this.urls});
+		if(browser.storage.sync && !syncing) browser.storage.sync.set({urls: this.urls});
 		browser.tabs.reload({bypassCache: true});
 	};
 	
