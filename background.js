@@ -1,60 +1,85 @@
-// data functions
+// ******************** global variables ********************
 
-// sync remote data to local if not yet done
-// this is necessary because both the events in the background js
-// and the sync storage API are async calls too
-// and I wouldn't be able to pass data over from one to the other
-// so during the calls I set both the local and the remote storage
-// and I read only the local one which is always synced this way
+// holds a list of blocked urls
+var g_urls = [];
+// true if data is loaded from local storage
+var g_sync_local  = false;
+// true if data is loaded from remote storage
+var g_sync_remote = false;
 
+
+// ******************** array functions ********************
+
+function array_uniq(a){
+  return a.filter(function (e, i, a) {
+    return a.lastIndexOf(e) === i;
+  }).sort();
+}
+
+function array_merge_uniq(a, b){
+  return array_uniq(a).concat(
+    array_uniq(b).filter(function (x){
+      return a.indexOf(x) < 0;
+    })
+  ).sort();
+}
+
+
+// ******************** sync functions ********************
+
+// load local data and sync with remote if available by merging them
 function url_sync(){
-  if (!localStorage.getItem("sync") && !localStorage.getItem("urls")){
-    chrome.storage.sync.get("urls", function(data){
-      var d = [];
-      if (data){
-        if (data.urls){
-          d = data.urls;
-          if (d.length > 0){
-            localStorage.setItem("urls", JSON.stringify(d));
-            localStorage.setItem("sync", 1);
-          }
-        }
+  if (!g_sync_local){
+    chrome.storage.local.get(function(ldata){
+      g_urls = array_merge_uniq(ldata.urls || [], g_urls);
+      g_sync_local = true;
+      url_store();
+      url_sync_remote();
+    });
+  }
+}
+
+function url_sync_remote(){
+  if (chrome.storage.sync){
+    chrome.storage.sync.get(function(sdata){
+      if (sdata){
+        g_urls = array_merge_uniq(sdata.urls || [], g_urls);
+        g_sync_remote = true;
+        url_store();
       }
     });
   }
 }
 
-function url_get(){
-  var d = localStorage.getItem("urls");
-  return (d ? JSON.parse(d) : []);
+function url_store(){
+  if (g_sync_local){ chrome.storage.local.set({urls: g_urls}); }
+  if (g_sync_remote){ chrome.storage.sync.set({urls: g_urls}); }
 }
 
-function url_test(url){
-  var d = url_get();
-  return (d.indexOf(url) > -1);
+
+// ******************** url functions ********************
+
+function url_test(u){
+  return g_urls.indexOf(u) > -1;
 }
 
-function url_set(url){
-  if (!url_test(url)){
-    var d = url_get();
-    d.push(url);
-    localStorage.setItem("urls", JSON.stringify(d));
-    chrome.storage.sync.set({"urls": d});
+function url_set(u){
+  if (!url_test(u)){
+    g_urls.push(u);
+    url_store();
   }
 }
 
-function url_remove(url){
-  if (url_test(url)){
-    var d = url_get();
-    d.splice(d.indexOf(url), 1);
-    localStorage.setItem("urls", JSON.stringify(d));
-    chrome.storage.sync.set({"urls": d});
+function url_remove(u){
+  if (url_test(u)){
+    g_urls.splice(g_urls.indexOf(u), 1);
+    url_store();
   }
 }
 
 
 // check if page is marked untrusted and set icons and return state
-// according to it
+//   according to it
 function state(url, flag){
   var flag_untrusted = false;
   var flag_icon = false;
@@ -65,7 +90,7 @@ function state(url, flag){
     if (u2){
       var u = u2[1];
 
-      // url exists? if so, it means page is marked untrusted
+      // url exists? if so, it means page is untrusted
       flag_untrusted = url_test(u);
       if (!flag_untrusted){
         if (flag){
@@ -83,7 +108,7 @@ function state(url, flag){
       }
     }
 
-    // set toolbar icon
+    // set toolbar state of icon
     if (flag_icon){
       chrome.browserAction.setIcon({path: "icons/icon2.svg"});
     }
@@ -96,6 +121,8 @@ function state(url, flag){
 }
 
 
+// ******************** events ********************
+
 // mark page untrusted or trusted when icon is clicked
 chrome.browserAction.onClicked.addListener(
   function(details){
@@ -105,13 +132,14 @@ chrome.browserAction.onClicked.addListener(
 );
 
 
-// update icon when switching tab based on whether page is trusted
+// update icon state when switching tab based on whether page is trusted
 chrome.tabs.onActivated.addListener(
   function(details){
-    // try to sync data from time to time on tab switch because
-    //   the user might sign in the Sync service only later
+    // try to sync remote data from time to time on tab switch
+    //   because the user might sign in the Sync service later only
     //   and I need to grab the remote data then
-    url_sync();
+    url_sync_remote();
+
     chrome.tabs.query({currentWindow: true, active: true},
       function(tab){
         state(tab[0].url);
@@ -122,7 +150,7 @@ chrome.tabs.onActivated.addListener(
 
 
 // block scripts on page if url is marked untrsuted based on
-// whether url exists in storage
+//   whether url exists in storage
 chrome.webRequest.onHeadersReceived.addListener(
   function(details){
 
@@ -146,5 +174,7 @@ chrome.webRequest.onHeadersReceived.addListener(
 );
 
 
-// sync data on extension startup
+// ******************** init ********************
+
+// sync data on startup
 url_sync();
