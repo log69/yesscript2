@@ -31,7 +31,7 @@ function array_merge_uniq(a, b){
 function url_sync(){
   if (!g_sync_local){
     chrome.storage.local.get(function(ldata){
-      if (typeof sdata.urls != "undefined"){
+      if (typeof ldata.urls != "undefined"){
         g_urls = array_merge_uniq(ldata.urls || [], g_urls);
       }
       g_sync_local = true;
