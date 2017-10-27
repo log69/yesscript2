@@ -1,7 +1,7 @@
 **It marks the domain of the active tab untrusted, reloads the page and blocks scripts from running on it. An option for the user to stop a website eating up resources or doing malicious things even if it breaks functionality of the page.**
 
 
-The primary goal of this extension is to give you the control to be able to block or allow scrips on specific websites. You cannot do this with your stock browser without turning off scripting for every page which is not useful.
+The primary goal of this extension is to give you the control to be able to block or allow scripts on specific websites. You cannot do this with your stock browser without turning off scripting for every page which is not useful.
 
 Pushing functionality from server side back to the users by running more codes on their computers instead of on the server is a tendency where the industry go and so web sites use more and more resources on the users' devices so their battery may go off faster. The other problem is that websites and web services become more and more vulnerable for cyber attacks using cross site scripting and other techniques. These can be solved with this extension with some trade off.
 
