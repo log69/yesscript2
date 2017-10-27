@@ -31,7 +31,9 @@ function array_merge_uniq(a, b){
 function url_sync(){
   if (!g_sync_local){
     chrome.storage.local.get(function(ldata){
-      g_urls = array_merge_uniq(ldata.urls || [], g_urls);
+      if (typeof sdata.urls != "undefined"){
+        g_urls = array_merge_uniq(ldata.urls || [], g_urls);
+      }
       g_sync_local = true;
       url_store();
       url_sync_remote();
@@ -42,8 +44,8 @@ function url_sync(){
 function url_sync_remote(){
   if (!g_sync_remote && chrome.storage.sync){
     chrome.storage.sync.get(function(sdata){
-      if (sdata){
-        g_urls = array_merge_uniq(sdata.urls || [], g_urls);
+      if (sdata && typeof sdata.urls != "undefined"){
+        g_urls = array_merge_uniq(sdata.urls, g_urls);
         g_sync_remote = true;
         url_store();
       }
@@ -153,6 +155,7 @@ chrome.tabs.onActivated.addListener(
 chrome.tabs.onUpdated.addListener(
   function(tabId, changeInfo, tab){
     if (tab.status == "complete" && tab.active) {
+      url_sync_remote();
       state(tab.url);
     }
   }
