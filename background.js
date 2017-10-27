@@ -85,9 +85,9 @@ function set_icon(flag){
 }
 
 
-// check if page is marked untrusted and set icons and return state
+// check if page is marked untrusted and set icons and return status
 //   according to it
-function state(url, flag){
+function status(url, flag){
   var flag_untrusted = false;
   var flag_icon = false;
 
@@ -115,7 +115,7 @@ function state(url, flag){
       }
     }
 
-    // set toolbar state of icon
+    // set state of toolbar icon
     set_icon(flag_icon)
   }
 
@@ -128,13 +128,13 @@ function state(url, flag){
 // mark page untrusted or trusted when icon is clicked
 chrome.browserAction.onClicked.addListener(
   function(details){
-    state(details.url, 1);
+    status(details.url, 1);
     chrome.tabs.reload({bypassCache: true});
   }
 );
 
 
-// update icon state when switching tab
+// update icon and check status when switching tabs
 chrome.tabs.onActivated.addListener(
   function(details){
     // try to sync remote data from time to time on tab switch
@@ -143,20 +143,37 @@ chrome.tabs.onActivated.addListener(
     url_sync_remote();
 
     chrome.tabs.query({currentWindow: true, active: true},
-      function(tab){
-        state(tab[0].url);
+      function(tabs){
+        status(tabs[0].url);
       }
     );
   }
 );
 
 
-// update icon state when the active page has finished loading
+// update icon and check status when switching windows
+// this check is necessary for android because it has no windows
+if (chrome.windows){
+  chrome.windows.onFocusChanged.addListener(
+    function(winid){
+      if (winid != chrome.windows.WINDOW_ID_NONE){
+        chrome.tabs.query({windowId: winid, active: true},
+          function(tabs){
+            status(tabs[0].url);
+          }
+        );
+      }
+    }
+  );
+}
+
+
+// update icon and check status when the active page has finished loading
 chrome.tabs.onUpdated.addListener(
   function(tabId, changeInfo, tab){
     if (tab.status == "complete" && tab.active) {
       url_sync_remote();
-      state(tab.url);
+      status(tab.url);
     }
   }
 );
@@ -167,7 +184,7 @@ chrome.tabs.onUpdated.addListener(
 chrome.webRequest.onHeadersReceived.addListener(
   function(details){
 
-    if (state(details.url)){
+    if (status(details.url)){
 
       // include the original response header too
       //   merging the two arrays here
