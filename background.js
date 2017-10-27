@@ -151,9 +151,9 @@ chrome.tabs.onActivated.addListener(
 );
 
 
-// update icon and check status when switching windows
-// this check is necessary for android because it has no windows
+// this is for android because it has no windows
 if (chrome.windows){
+  // update icon and check status when switching windows
   chrome.windows.onFocusChanged.addListener(
     function(winid){
       if (winid != chrome.windows.WINDOW_ID_NONE){
