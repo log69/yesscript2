@@ -79,6 +79,11 @@ function url_remove(u){
   }
 }
 
+function set_icon(flag){
+  p = flag ? "icons/icon2.svg" : "icons/icon.svg"
+  chrome.browserAction.setIcon({path: p});
+}
+
 
 // check if page is marked untrusted and set icons and return state
 //   according to it
@@ -111,12 +116,7 @@ function state(url, flag){
     }
 
     // set toolbar state of icon
-    if (flag_icon){
-      chrome.browserAction.setIcon({path: "icons/icon2.svg"});
-    }
-    else{
-      chrome.browserAction.setIcon({path: "icons/icon.svg"});
-    }
+    set_icon(flag_icon)
   }
 
   return flag_untrusted;
