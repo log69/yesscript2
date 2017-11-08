@@ -9,7 +9,7 @@ Turning off scripts on websites might break functionality. However if some of th
 
 This tool is just an option for you. There are other more sophisticated options like using the NoScript extension which is a great piece of work that gives you better security because it can block scripts before loading at all whereas YesScript2 blocks them after you activate it by clicking on the icon. However teaching your browser for every domain and every script calls with NoScript seems a tedious and long work. It varies to whom it's worth it. If it's not you then YesScript2 might work for you better.
 
-*One of main priority when writing this extension was to create an extremely small code set so it can be audited much easier making it more trustful. The less lines of code, the more reliable and secure a solution can be.*
+*One of the main priorities when writing this extension was to create an extremely small code set so it can be audited much easier making it more trustful. The less lines of code, the more reliable and secure a solution can be.*
 
 *I'd also like to express that I find the original YesScript extension a great idea and a nice work. This is a complete rewrite of it because the developer did not intend to continue development. This has nothing to do with the original in any way except its purpose.*
 
