@@ -199,7 +199,7 @@ chrome.webRequest.onHeadersReceived.addListener(
 
     return {};
   },
-  {urls: ["<all_urls>"], types: ["main_frame"]},
+  {urls: ["<all_urls>"], types: ["main_frame", "sub_frame"]},
   ["blocking", "responseHeaders"]
 );
 
