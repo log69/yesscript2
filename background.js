@@ -81,7 +81,11 @@ function url_remove(u){
 
 function set_icon(flag){
   p = flag ? "icons/icon2.svg" : "icons/icon.svg"
-  chrome.browserAction.setIcon({path: p});
+  // browserAction.setIcon function is not available on Android
+  //   so check it first
+  if (chrome.browserAction.setIcon){
+    chrome.browserAction.setIcon({path: p});
+  }
 }
 
 
