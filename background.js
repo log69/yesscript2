@@ -1,3 +1,4 @@
+
 // ******************** global variables ********************
 
 // holds a list of blocked urls
@@ -80,10 +81,10 @@ function url_remove(u){
 }
 
 function set_icon(flag){
-  p = flag ? "icons/icon2.svg" : "icons/icon.svg"
   // browserAction.setIcon function is not available on Android
   //   so check it first
   if (chrome.browserAction.setIcon){
+    p = flag ? "icons/icon2.svg" : "icons/icon.svg"
     chrome.browserAction.setIcon({path: p});
   }
 }
