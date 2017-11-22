@@ -3,7 +3,7 @@
 **Features:**
 * single click operation
 * automatic page reload
-* utilizing Firefox's Sync feature to remember and auto restore settings (version 53+, before local storage only)
+* utilizing Firefox's Sync feature to remember and auto restore settings across devices (version 53+, before local storage only)
 * compatible with desktop and mobile platforms
 
 The primary goal of this extension is to give you the control to be able to block or allow scripts on specific websites. You cannot do this with your stock browser without turning off scripting for every page which is not useful.
