@@ -1,5 +1,5 @@
 # YesScript2
-## WebExtension for browsers blocking scripts on specific sites
+## WebExtension for browsers to block scripts on sites
 
 Clicking the toolbar icon does the following:
 
