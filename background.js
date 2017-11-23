@@ -80,19 +80,24 @@ function url_remove(u){
   }
 }
 
-function set_icon(flag){
-  // browserAction.setIcon function is not available on Android
+function set_icon(flag, tabid){
+  // browserAction.setIcon function is not available on mobile
   //   so check it first
   if (chrome.browserAction.setIcon){
     p = flag ? "icons/icon2.svg" : "icons/icon.svg"
     chrome.browserAction.setIcon({path: p});
+  }
+  // set tooltip for button on desktop and menu entry name on mobile
+  if (tabid){
+    t = flag ? "YesScript2 blocking" : "YesScript2"
+    chrome.browserAction.setTitle({title: t, tabId: tabid});
   }
 }
 
 
 // check if page is marked untrusted and set icons and return status
 //   according to it
-function status(url, flag){
+function status(url, flag, tabid){
   var flag_untrusted = false;
   var flag_icon = false;
 
@@ -121,7 +126,7 @@ function status(url, flag){
     }
 
     // set state of toolbar icon
-    set_icon(flag_icon)
+    set_icon(flag_icon, tabid)
   }
 
   return flag_untrusted;
@@ -149,14 +154,14 @@ chrome.tabs.onActivated.addListener(
 
     chrome.tabs.query({currentWindow: true, active: true},
       function(tabs){
-        status(tabs[0].url);
+        status(tabs[0].url, null, tabs[0].id);
       }
     );
   }
 );
 
 
-// this is for android because it has no windows
+// this is a check for mobile platform because it has no windows
 if (chrome.windows){
   // update icon and check status when switching windows
   chrome.windows.onFocusChanged.addListener(
@@ -178,7 +183,7 @@ chrome.tabs.onUpdated.addListener(
   function(tabId, changeInfo, tab){
     if (tab.status == "complete" && tab.active) {
       url_sync_remote();
-      status(tab.url);
+      status(tab.url, null, tab.id);
     }
   }
 );
