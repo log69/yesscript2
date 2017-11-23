@@ -169,7 +169,7 @@ if (chrome.windows){
       if (winid != chrome.windows.WINDOW_ID_NONE){
         chrome.tabs.query({windowId: winid, active: true},
           function(tabs){
-            status(tabs[0].url);
+            status(tabs[0].url, null, tabs[0].id);
           }
         );
       }
