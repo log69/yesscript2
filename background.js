@@ -170,7 +170,9 @@ if (chrome.windows){
         chrome.tabs.query({windowId: winid, active: true},
           function(tabs){
             if (typeof tabs != "undefined"){
-              status(tabs[0].url, null, tabs[0].id);
+              if (typeof tabs[0] != "undefined"){
+                status(tabs[0].url, null, tabs[0].id);
+              }
             }
           }
         );
