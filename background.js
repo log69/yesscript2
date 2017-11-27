@@ -1,7 +1,21 @@
 
+// -----------------------------------------------------------------
+// -------------------- YesScript2 webextension --------------------
+// -----------------------------------------------------------------
+// copyright (C) 2017 Andras Horvath <mail@log69.com>
+// license: MIT
+// info: blocks scripts on sites, there are 3 states:
+//   1)   no blocking (website is untouched)
+//   2) half blocking (blocks all scripts except from self and inline)
+//   3) full blocking (blocks all scripts)
+//   page is reloaded automatically after every click
+
+
 // ******************** global variables ********************
 
 // holds a list of blocked urls
+// ?domain.com means half blocking (allowing self and inline scripts)
+// domain.com means full blocking
 var g_urls = [];
 // true if data is loaded from local storage
 var g_sync_local  = false;
@@ -11,18 +25,22 @@ var g_sync_remote = false;
 
 // ******************** array functions ********************
 
+// ?domain.com and domain.com are considered the same
 function array_uniq(a){
-  return a.filter(function (e, i, a) {
-    return a.lastIndexOf(e) === i;
-  }).sort();
+  var b = [];
+  for (var i in a) {
+    var x = a[i];
+    var y = (x[0] == "?") ? x.substr(1, x.length-1) : x;
+    if (b.indexOf(y) < 0 && b.indexOf("?" + y) < 0){
+      b.push(x);
+    }
+  }
+  return b;
 }
 
-function array_merge_uniq(a, b){
-  return array_uniq(a).concat(
-    array_uniq(b).filter(function (x){
-      return a.indexOf(x) < 0;
-    })
-  ).sort();
+// merge arrays and uniq and sort
+function array_merge(a, b){
+  return array_uniq(a.concat(b)).sort();
 }
 
 
@@ -33,7 +51,7 @@ function url_sync(){
   if (!g_sync_local){
     chrome.storage.local.get(function(ldata){
       if (typeof ldata.urls != "undefined"){
-        g_urls = array_merge_uniq(ldata.urls || [], g_urls);
+        g_urls = array_merge(ldata.urls || [], g_urls);
       }
       g_sync_local = true;
       url_store();
@@ -46,7 +64,7 @@ function url_sync_remote(){
   if (!g_sync_remote && chrome.storage.sync){
     chrome.storage.sync.get(function(sdata){
       if (sdata && typeof sdata.urls != "undefined"){
-        g_urls = array_merge_uniq(sdata.urls, g_urls);
+        g_urls = array_merge(sdata.urls, g_urls);
         g_sync_remote = true;
         url_store();
       }
@@ -62,21 +80,25 @@ function url_store(){
 
 // ******************** url functions ********************
 
+// is domain blocked? false = no, 2 = half, 3 = full
 function url_test(u){
-  return g_urls.indexOf(u) > -1;
+  var res = false;
+  if (g_urls.indexOf("?" + u) > -1){ res = 2; }
+  if (g_urls.indexOf(      u) > -1){ res = 3; }
+  return res;
 }
 
-function url_set(u){
-  if (!url_test(u)){
-    g_urls.push(u);
-    url_store();
+// switch to next state (no -> half -> full)
+function url_next_state(u){
+  var t = url_test(u);
+  if (t == 2){
+    g_urls[g_urls.indexOf("?" + u)] = u;
   }
-}
-
-function url_remove(u){
-  if (url_test(u)){
+  else if (t == 3){
     g_urls.splice(g_urls.indexOf(u), 1);
-    url_store();
+  }
+  else{
+    g_urls.push("?" + u);
   }
 }
 
@@ -84,12 +106,16 @@ function set_icon(flag, tabid){
   // browserAction.setIcon function is not available on mobile
   //   so check it first
   if (chrome.browserAction.setIcon){
-    p = flag ? "icons/icon2.svg" : "icons/icon.svg"
+    p = "icons/icon.svg";
+    if (flag == 2){ p = "icons/icon2.svg"; }
+    if (flag == 3){ p = "icons/icon3.svg"; }
     chrome.browserAction.setIcon({path: p});
   }
   // set tooltip for button on desktop and menu entry name on mobile
   if (tabid){
-    t = flag ? "YesScript2 blocking" : "YesScript2"
+    t = "YesScript2 no blocking";
+    if (flag == 2){ t = "YesScript2 half blocking"; }
+    if (flag == 3){ t = "YesScript2 full blocking"; }
     chrome.browserAction.setTitle({title: t, tabId: tabid});
   }
 }
@@ -97,9 +123,10 @@ function set_icon(flag, tabid){
 
 // check if page is marked untrusted and set icons and return status
 //   according to it
-function status(url, flag, tabid){
-  var flag_untrusted = false;
-  var flag_icon = false;
+// status of false means no blocking, 2 means half, 3 means full
+function status(url, flag_clicked, tabid){
+  var flag_state = false;
+  var flag_icon  = false;
 
   if (url){
     // get domain part of the url
@@ -107,29 +134,19 @@ function status(url, flag, tabid){
     if (u2){
       var u = u2[1];
 
+      // was there any click? toggle state of domain if so
+      if (flag_clicked){ url_next_state(u); }
+
       // url exists? if so, it means page is untrusted
-      flag_untrusted = url_test(u);
-      if (!flag_untrusted){
-        if (flag){
-          // mark page untrusted if icon was clicked
-          url_set(u);
-        }
-        flag_icon = flag;
-      }
-      else{
-        if (flag){
-          // mark page trusted if icon was clicked
-          url_remove(u);
-        }
-        flag_icon = !flag;
-      }
+      flag_state = url_test(u);
+      flag_icon  = flag_state;
     }
 
     // set state of toolbar icon
-    set_icon(flag_icon, tabid)
+    set_icon(flag_icon, tabid);
   }
 
-  return flag_untrusted;
+  return flag_state;
 }
 
 
@@ -144,7 +161,7 @@ chrome.browserAction.onClicked.addListener(
 );
 
 
-// update icon and check status when switching tabs
+// update when switching tabs
 chrome.tabs.onActivated.addListener(
   function(details){
     // try to sync remote data from time to time on tab switch
@@ -163,7 +180,7 @@ chrome.tabs.onActivated.addListener(
 
 // this is a check for mobile platform because it has no windows
 if (chrome.windows){
-  // update icon and check status when switching windows
+  // update when switching windows
   chrome.windows.onFocusChanged.addListener(
     function(winid){
       if (winid != chrome.windows.WINDOW_ID_NONE){
@@ -182,7 +199,7 @@ if (chrome.windows){
 }
 
 
-// update icon and check status when the active page has finished loading
+// update when active page has finished loading
 chrome.tabs.onUpdated.addListener(
   function(tabId, changeInfo, tab){
     if (tab.status == "complete" && tab.active) {
@@ -195,18 +212,32 @@ chrome.tabs.onUpdated.addListener(
 
 // block scripts on page if url is marked untrsuted based on
 //   whether url exists in storage
+// blocking can be half blocking (green icon) or full (red icon)
+//   half means that all scripts are blocked except the ones from domain
+//   full means that all scripts are blocked entirely
+// include the original response header merging the two arrays
+// the trick of blocking all scripts for a domain is
+//   adding CSP to the page header
+// https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
+// https://content-security-policy.com
 chrome.webRequest.onHeadersReceived.addListener(
   function(details){
+    var s = status(details.url);
 
-    if (status(details.url)){
-
-      // include the original response header too
-      //   merging the two arrays here
-      // the trick of blocking all scripts for a domain is
-      //   adding CSP to the page header
-      // https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP
+    // half blocking?
+    if (s == 2){
       var rh = details.responseHeaders.concat(
-        [{name: "Content-Security-Policy", value: "script-src 'none'"}]
+        [{name: "Content-Security-Policy",
+          value: "script-src 'self' 'unsafe-inline'"}]
+      );
+      return {responseHeaders: rh};
+    }
+
+    // full blocking?
+    if (s == 3){
+      var rh = details.responseHeaders.concat(
+        [{name: "Content-Security-Policy",
+          value: "script-src 'none'"}]
       );
       return {responseHeaders: rh};
     }
@@ -222,3 +253,4 @@ chrome.webRequest.onHeadersReceived.addListener(
 
 // sync data on startup
 url_sync();
+
