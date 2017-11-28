@@ -58,13 +58,21 @@ function url_sync(){
       url_sync_remote();
     });
   }
+  else if (!g_sync_remote){
+    url_sync_remote();
+  }
+  else {
+    url_store();
+  }
 }
 
 function url_sync_remote(){
   if (!g_sync_remote && chrome.storage.sync){
     chrome.storage.sync.get(function(sdata){
-      if (sdata && typeof sdata.urls != "undefined"){
-        g_urls = array_merge(sdata.urls, g_urls);
+      if (sdata){
+        if (typeof sdata.urls != "undefined"){
+          g_urls = array_merge(sdata.urls, g_urls);
+        }
         g_sync_remote = true;
         url_store();
       }
@@ -167,7 +175,7 @@ chrome.tabs.onActivated.addListener(
     // try to sync remote data from time to time on tab switch
     //   because the user might sign in the Sync service later only
     //   and I need to grab the remote data then
-    url_sync_remote();
+    url_sync();
 
     chrome.tabs.query({currentWindow: true, active: true},
       function(tabs){
@@ -203,7 +211,7 @@ if (chrome.windows){
 chrome.tabs.onUpdated.addListener(
   function(tabId, changeInfo, tab){
     if (tab.status == "complete" && tab.active) {
-      url_sync_remote();
+      url_sync();
       status(tab.url, null, tab.id);
     }
   }
