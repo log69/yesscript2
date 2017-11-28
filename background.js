@@ -46,12 +46,15 @@ function array_merge(a, b){
 
 // ******************** sync functions ********************
 
+function debug(obj, text){ console.log("DEBUG / " + text.toString() + " / " + JSON.stringify(obj)); }
+
 // load local data and sync with remote if available by merging them
 function url_sync(){
   if (!g_sync_local){
     chrome.storage.local.get(function(ldata){
+      debug(ldata, "ldata");
       if (typeof ldata.urls != "undefined"){
-        g_urls = array_merge(ldata.urls || [], g_urls);
+        g_urls = array_merge(ldata.urls, g_urls);
       }
       g_sync_local = true;
       url_store();
@@ -67,14 +70,21 @@ function url_sync(){
 }
 
 function url_sync_remote(){
+  // need to test for sync object because mobile doesn't have it
   if (!g_sync_remote && chrome.storage.sync){
+    // set a sample value to test whether user is signed in sync
+    //   by getting back this value, no other methods so far
+    chrome.storage.sync.set({test: 1});
     chrome.storage.sync.get(function(sdata){
       if (sdata){
-        if (typeof sdata.urls != "undefined"){
-          g_urls = array_merge(sdata.urls, g_urls);
+        debug(sdata, "sdata");
+        if (typeof sdata.test != "undefined"){
+          if (typeof sdata.urls != "undefined"){
+            g_urls = array_merge(sdata.urls, g_urls);
+          }
+          g_sync_remote = true;
+          url_store();
         }
-        g_sync_remote = true;
-        url_store();
       }
     });
   }

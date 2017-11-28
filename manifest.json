@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "YesScript2",
-  "version": "3.5",
+  "version": "3.6",
 
   "description": "blocks scripts on sites",
   "homepage_url": "https://github.com/log69/yesscript2",
