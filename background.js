@@ -110,7 +110,7 @@ function url_next_state(u){
   }
 }
 
-function set_icon(flag, tabid){
+function set_icon(flag){
   // browserAction.setIcon function is not available on mobile
   //   so check it first
   if (chrome.browserAction.setIcon){
@@ -120,19 +120,17 @@ function set_icon(flag, tabid){
     chrome.browserAction.setIcon({path: p});
   }
   // set tooltip for button on desktop and menu entry name on mobile
-  if (tabid){
-    t = "YesScript2 no blocking";
-    if (flag == 2){ t = "YesScript2 half blocking"; }
-    if (flag == 3){ t = "YesScript2 full blocking"; }
-    chrome.browserAction.setTitle({title: t, tabId: tabid});
-  }
+  t = "YesScript2 no blocking";
+  if (flag == 2){ t = "YesScript2 half blocking"; }
+  if (flag == 3){ t = "YesScript2 full blocking"; }
+  chrome.browserAction.setTitle({title: t});
 }
 
 
 // check if page is marked untrusted and set icons and return status
 //   according to it
 // status of false means no blocking, 2 means half, 3 means full
-function status(url, flag_clicked, tabid){
+function status(url, flag_clicked){
   var flag_state = false;
   var flag_icon  = false;
 
@@ -151,7 +149,7 @@ function status(url, flag_clicked, tabid){
     }
 
     // set state of toolbar icon
-    set_icon(flag_icon, tabid);
+    set_icon(flag_icon);
   }
 
   return flag_state;
@@ -179,7 +177,7 @@ chrome.tabs.onActivated.addListener(
 
     chrome.tabs.query({currentWindow: true, active: true},
       function(tabs){
-        status(tabs[0].url, null, tabs[0].id);
+        status(tabs[0].url);
       }
     );
   }
@@ -196,7 +194,7 @@ if (chrome.windows){
           function(tabs){
             if (typeof tabs != "undefined"){
               if (typeof tabs[0] != "undefined"){
-                status(tabs[0].url, null, tabs[0].id);
+                status(tabs[0].url);
               }
             }
           }
@@ -212,7 +210,7 @@ chrome.tabs.onUpdated.addListener(
   function(tabId, changeInfo, tab){
     if (tab.status == "complete" && tab.active) {
       url_sync();
-      status(tab.url, null, tab.id);
+      status(tab.url);
     }
   }
 );
