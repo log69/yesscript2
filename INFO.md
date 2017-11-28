@@ -2,6 +2,7 @@
 
 **Features:**
 * single click operation
+* 3 states of blocking: no blocking, half blocking (allowing internal and blocking external) and full blocking (blocking internal and external too)
 * automatic page reload
 * utilizing Firefox's Sync feature to remember and auto restore settings across devices (version 53+ or local storage only)
 * compatible with desktop and mobile platforms
