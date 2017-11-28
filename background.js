@@ -6,8 +6,8 @@
 // license: MIT
 // info: blocks scripts on sites, there are 3 states:
 //   1)   no blocking (website is untouched)
-//   2) half blocking (blocks all scripts except from self and inline)
-//   3) full blocking (blocks all scripts)
+//   2) half blocking (allowing internal and blocking external)
+//   3) full blocking (blocking internal and external too)
 //   page is reloaded automatically after every click
 
 
