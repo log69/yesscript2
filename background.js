@@ -94,7 +94,6 @@ function url_store(){
 
     if (g_sync_local){ chrome.storage.local.set({"urls": g_urls}); }
     chrome.storage.sync.set({"urls": g_urls});
-    debug(g_urls, "store");
   }
 }
 
