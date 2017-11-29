@@ -2,20 +2,18 @@
 // -----------------------------------------------------------------
 // -------------------- YesScript2 webextension --------------------
 // -----------------------------------------------------------------
-// copyright (C) 2017 Andras Horvath <mail@log69.com>
-// license: MIT
-// info: blocks scripts on sites, there are 3 states:
+// Copyright (C) 2017 Andras Horvath <mail@log69.com>
+// License: MIT
+// Info: blocks scripts on sites with 3 states:
 //   1)   no blocking (website is untouched)
-//   2) half blocking (allowing internal and blocking external)
-//   3) full blocking (blocking internal and external too)
+//   2) half blocking (allowing internal and blocking external scripts)
+//   3) full blocking (blocking internal and external scripts too)
 //   page is reloaded automatically after every click
 
 
 // ******************** global variables ********************
 
 // holds a list of blocked urls
-// ?domain.com means half blocking (allowing self and inline scripts)
-// domain.com means full blocking
 var g_urls  = [];
 var g_urls2 = [];
 // true if data is loaded from local storage
@@ -72,7 +70,7 @@ function url_sync(){
 }
 
 function url_sync_remote(){
-  // need to test for sync object because it's not available on mobile
+  // check for sync object because it's not available for mobile
   if (chrome.storage.sync){
     // continuously keep fetching remote data from sync if any
     //   and merge it with local one because we cannot know
@@ -87,7 +85,7 @@ function url_sync_remote(){
 }
 
 function url_store(){
-  // storing data when changed only helps keep the number of writes down
+  // storing data when changed only helps keep the number of writes low
   //   to avoid reaching a limit in sync writes
   if (JSON.stringify(g_urls2) != JSON.stringify(g_urls)){
     g_urls2 = g_urls;
@@ -132,7 +130,7 @@ function url_next_state(u){
 }
 
 function set_icon(flag){
-  // browserAction.setIcon function is not available on mobile
+  // browserAction.setIcon function is not available for mobile
   //   so check it first
   if (chrome.browserAction.setIcon){
     p = "icons/icon.svg";
@@ -150,7 +148,6 @@ function set_icon(flag){
 
 // check if page is marked untrusted and set icons and return status
 //   according to it
-// status of false means no blocking, 2 means half, 3 means full
 function status(url, flag_clicked){
   var flag_state = false;
   var flag_icon  = false;
@@ -164,7 +161,7 @@ function status(url, flag_clicked){
       // was there any click? toggle state of domain if so
       if (flag_clicked){ url_next_state(u); }
 
-      // url exists? if so, it means page is untrusted
+      // url exists? if so it means page is untrusted
       flag_state = url_test(u);
       flag_icon  = flag_state;
     }
@@ -205,7 +202,7 @@ chrome.tabs.onActivated.addListener(
 );
 
 
-// this is a check for mobile platform because it has no windows
+// check for windows object because it's not available for mobile
 if (chrome.windows){
   // update when switching windows
   chrome.windows.onFocusChanged.addListener(
@@ -239,9 +236,6 @@ chrome.tabs.onUpdated.addListener(
 
 // block scripts on page if url is marked untrsuted based on
 //   whether url exists in storage
-// blocking can be half blocking (green icon) or full (red icon)
-//   half means that all scripts are blocked except the ones from domain
-//   full means that all scripts are blocked entirely
 // include the original response header merging the two arrays
 // the trick of blocking all scripts for a domain is
 //   adding CSP to the page header
