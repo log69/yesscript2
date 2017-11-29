@@ -16,7 +16,8 @@
 // holds a list of blocked urls
 // ?domain.com means half blocking (allowing self and inline scripts)
 // domain.com means full blocking
-var g_urls = [];
+var g_urls  = [];
+var g_urls2 = [];
 // true if data is loaded from local storage
 var g_sync_local  = false;
 // true if data is loaded from remote storage
@@ -54,33 +55,27 @@ function debug(obj, text){ console.log("DEBUG / "
 function url_sync(){
   if (!g_sync_local){
     chrome.storage.local.get(function(ldata){
-      debug(ldata, "ldata");
       if (ldata && typeof ldata.urls != "undefined"){
         g_urls = array_merge(ldata.urls, g_urls);
       }
       g_sync_local = true;
-      url_store();
       url_sync_remote();
     });
   }
-//  else if (!g_sync_remote){
-//    url_sync_remote();
-//  }
   else {
     url_sync_remote();
   }
 }
 
 function url_sync_remote(){
-  // need to test for sync object because mobile doesn't have it
-  //if (!g_sync_remote && chrome.storage.sync){
+  // need to test for sync object because it's not available on mobile
   if (chrome.storage.sync){
+    // continuously keep fetching remote data from sync if any
+    //   and merge it with local one because we cannot know
+    //   when user will log in and when data will be available
     chrome.storage.sync.get(function(sdata){
-      debug(sdata, "sdata");
       if (sdata && typeof sdata.urls != "undefined"){
-        g_urls = array_merge(sdata.urls, g_urls);
-        //g_sync_remote = true;
-        //url_store();
+        g_urls = array_merge(g_urls, sdata.urls);
       }
     });
   }
@@ -88,10 +83,14 @@ function url_sync_remote(){
 }
 
 function url_store(){
-  if (g_sync_local){ chrome.storage.local.set({"urls": g_urls}); }
-  //if (g_sync_remote){ chrome.storage.sync.set({"urls": g_urls}); }
-  chrome.storage.sync.set({"urls": g_urls});
-  debug(g_urls, "g_urls");
+  // storing data when changed only helps keep the number of writes down
+  //   to avoid reaching a limit in sync writes
+  if (JSON.stringify(g_urls2) != JSON.stringify(g_urls)){
+    g_urls2 = g_urls;
+
+    if (g_sync_local){ chrome.storage.local.set({"urls": g_urls}); }
+    chrome.storage.sync.set({"urls": g_urls});
+  }
 }
 
 
