@@ -26,13 +26,17 @@ var g_sync_remote = false;
 
 // ******************** array functions ********************
 
-// ?domain.com and domain.com are considered the same
+// ??domain.com and ?domain.com and domain.com are considered the same
 function array_uniq(a){
   var b = [];
   for (var i in a) {
     var x = a[i];
-    var y = (x[0] == "?") ? x.substr(1, x.length-1) : x;
-    if (b.indexOf(y) < 0 && b.indexOf("?" + y) < 0){
+    var y = x;
+    if (x[0] == "?" && x[1] == "?"){ y = x.substr(2, x.length-1); }
+    else if           (x[0] == "?"){ y = x.substr(1, x.length-1); }
+    if ( b.indexOf(y) < 0
+      && b.indexOf("?" + y) < 0
+      && b.indexOf("??" + y) < 0){
       b.push(x);
     }
   }
@@ -90,17 +94,23 @@ function url_store(){
 
     if (g_sync_local){ chrome.storage.local.set({"urls": g_urls}); }
     chrome.storage.sync.set({"urls": g_urls});
+    debug(g_urls, "store");
   }
 }
 
 
 // ******************** url functions ********************
 
-// is domain blocked? false = no, 2 = half, 3 = full
+// is domain blocked? (empty means ??domain.com)
+//   ??domain.com (1) = no
+//    ?domain.com (2) = half
+//     domain.com (3) = full
 function url_test(u){
-  var res = false;
-  if (g_urls.indexOf("?" + u) > -1){ res = 2; }
-  if (g_urls.indexOf(      u) > -1){ res = 3; }
+  // default value for empty (no dmain name is stored)
+  var res = 1;
+       if (g_urls.indexOf("??" + u) > -1){ res = 1; }
+  else if (g_urls.indexOf("?"  + u) > -1){ res = 2; }
+  else if (g_urls.indexOf(       u) > -1){ res = 3; }
   return res;
 }
 
@@ -111,10 +121,14 @@ function url_next_state(u){
     g_urls[g_urls.indexOf("?" + u)] = u;
   }
   else if (t == 3){
-    g_urls.splice(g_urls.indexOf(u), 1);
+    g_urls[g_urls.indexOf(u)] = "??" + u;
   }
   else{
-    g_urls.push("?" + u);
+    if (g_urls.indexOf("??" + u) > -1){
+      g_urls[g_urls.indexOf("??" + u)] = "?" + u;
+    } else {
+      g_urls.push("?" + u);
+    }
   }
 }
 
