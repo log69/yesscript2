@@ -1,8 +1,8 @@
 **It marks the domain of the active tab untrusted, reloads the page and blocks scripts from running on it. An option for the user to stop a website eating up resources or doing malicious things even if it breaks functionality of the page.**
 
 **Features:**
-* single click operation
 * 3 states of blocking: no blocking, half blocking (allowing internal and blocking external) and full blocking (blocking internal and external too)
+* single click operation
 * automatic page reload
 * utilizing Firefox's Sync feature to remember and auto restore settings across devices (version 53+ or local storage only)
 * compatible with desktop and mobile platforms
