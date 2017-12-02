@@ -8,7 +8,7 @@
 //   1)   no blocking (website is untouched)
 //   2) half blocking (allowing internal and blocking external scripts)
 //   3) full blocking (blocking internal and external scripts too)
-//   page is reloaded automatically after every click
+//   page is reloaded automatically after every click in icon
 
 
 // -------------------- global variables --------------------
