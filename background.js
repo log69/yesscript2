@@ -11,7 +11,7 @@
 //   page is reloaded automatically after every click
 
 
-// ******************** global variables ********************
+// -------------------- global variables --------------------
 
 // holds a list of blocked urls
 var g_urls  = [];
@@ -22,7 +22,7 @@ var g_sync_local  = false;
 var g_sync_remote = false;
 
 
-// ******************** array functions ********************
+// -------------------- array functions --------------------
 
 // ??domain.com and ?domain.com and domain.com are considered the same
 function array_uniq(a){
@@ -47,7 +47,7 @@ function array_merge(a, b){
 }
 
 
-// ******************** sync functions ********************
+// -------------------- sync functions --------------------
 
 function debug(obj, text){ console.log("DEBUG / "
   + text.toString() + " / " + JSON.stringify(obj)); }
@@ -96,7 +96,7 @@ function url_store(){
 }
 
 
-// ******************** url functions ********************
+// -------------------- url functions --------------------
 
 // is domain blocked? (empty means ??domain.com)
 //   ??domain.com (1) = no
@@ -174,7 +174,7 @@ function status(url, flag_clicked){
 }
 
 
-// ******************** events ********************
+// -------------------- events --------------------
 
 // mark page untrusted or trusted when icon is clicked
 chrome.browserAction.onClicked.addListener(
@@ -270,7 +270,7 @@ chrome.webRequest.onHeadersReceived.addListener(
 );
 
 
-// ******************** init ********************
+// -------------------- init --------------------
 
 // sync data on startup
 url_sync();
