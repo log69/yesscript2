@@ -5,9 +5,9 @@
 // Copyright (C) 2017 Andras Horvath <mail@log69.com>
 // License: MIT
 // Info: blocks scripts on sites with 3 states:
-//   3) full blocking (blocking internal and external scripts too)
+//   1) full blocking (blocking internal and external scripts too)
 //   2) half blocking (allowing internal and blocking external scripts)
-//   1) no blocking (website is untouched)
+//   3) no blocking (website is untouched)
 //   page is reloaded automatically after every click in icon
 
 
