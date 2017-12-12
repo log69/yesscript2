@@ -111,20 +111,20 @@ function url_test(u){
   return res;
 }
 
-// switch to next state (no -> half -> full)
+// switch to next state (full -> half -> no)
 function url_next_state(u){
   var t = url_test(u);
   if (t == 2){
-    g_urls[g_urls.indexOf("?" + u)] = u;
+    g_urls[g_urls.indexOf("?" + u)] = "??" + u;
   }
   else if (t == 3){
-    g_urls[g_urls.indexOf(u)] = "??" + u;
+    g_urls[g_urls.indexOf(u)] = "?" + u;
   }
   else{
     if (g_urls.indexOf("??" + u) > -1){
-      g_urls[g_urls.indexOf("??" + u)] = "?" + u;
+      g_urls[g_urls.indexOf("??" + u)] = u;
     } else {
-      g_urls.push("?" + u);
+      g_urls.push(u);
     }
   }
 }
