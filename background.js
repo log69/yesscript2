@@ -104,7 +104,7 @@ function url_store(){
 //     domain.com (3) = full
 function url_test(u){
   // default value for empty (no dmain name is stored)
-  var res = 1;
+  var res = 3;
        if (g_urls.indexOf("??" + u) > -1){ res = 1; }
   else if (g_urls.indexOf("?"  + u) > -1){ res = 2; }
   else if (g_urls.indexOf(       u) > -1){ res = 3; }
@@ -118,14 +118,14 @@ function url_next_state(u){
     g_urls[g_urls.indexOf("?" + u)] = "??" + u;
   }
   else if (t == 3){
-    g_urls[g_urls.indexOf(u)] = "?" + u;
+    if (g_urls.indexOf(u) > -1){
+      g_urls[g_urls.indexOf(u)] = "?" + u;
+    } else {
+      g_urls.push("?" + u);
+    }
   }
   else{
-    if (g_urls.indexOf("??" + u) > -1){
-      g_urls[g_urls.indexOf("??" + u)] = u;
-    } else {
-      g_urls.push(u);
-    }
+    g_urls[g_urls.indexOf("??" + u)] = u;
   }
 }
 
