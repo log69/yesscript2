@@ -103,7 +103,7 @@ function url_store(){
 //    ?domain.com (2) = half
 //     domain.com (3) = full
 function url_test(u){
-  // default value for empty (no dmain name is stored)
+  // default value for empty (no domain name is stored)
   var res = 1;
        if (g_urls.indexOf("??" + u) > -1){ res = 1; }
   else if (g_urls.indexOf("?"  + u) > -1){ res = 2; }
@@ -234,7 +234,7 @@ chrome.tabs.onUpdated.addListener(
 );
 
 
-// block scripts on page if url is marked untrsuted based on
+// block scripts on page if url is marked untrusted based on
 //   whether url exists in storage
 // include the original response header merging the two arrays
 // the trick of blocking all scripts for a domain is
